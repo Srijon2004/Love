@@ -100,4 +100,93 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+// Google Signup
+router.post("/google-signup", async (req, res) => {
+  try {
+    const { name, email, googleId, photo } = req.body;
+    if (!email || !googleId) {
+      return res.status(400).json({ message: "Email and Google ID required" });
+    }
+
+    // Check if user exists by googleId
+    let user = await User.findOne({ googleId });
+
+    if (!user) {
+      // Create new Google user
+      user = new User({
+        username: name,
+        email,
+        googleId,
+        photo,
+      });
+      await user.save();
+    }
+
+    // Create JWT
+    const payload = { user: { id: user.id, username: user.username } };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res
+      .cookie("token", token, { httpOnly: true, sameSite: "lax" })
+      .json({ id: user._id, username: user.username, email: user.email, photo: user.photo });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Google signup failed" });
+  }
+});
+
+// Google Login
+router.post("/google-login", async (req, res) => {
+  try {
+    const { email, googleId } = req.body;
+    if (!email || !googleId) {
+      return res.status(400).json({ message: "Email and Google ID required" });
+    }
+
+    // Find user
+    const user = await User.findOne({ email, googleId });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // Create JWT
+    const payload = { user: { id: user.id, username: user.username } };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res
+      .cookie("token", token, { httpOnly: true, sameSite: "lax" })
+      .json({ id: user._id, username: user.username, email: user.email, photo: user.photo });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Google login failed" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;

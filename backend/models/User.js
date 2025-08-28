@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema(
     username: { type: String, required: true,  trim: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
+    googleId: { type: String, default: null }, // unique Google ID
+    photo: { type: String, default: "" }, // profile picture
     girlfriend: {
       type: girlfriendSchema,
       default: null, // initially no girlfriend details
