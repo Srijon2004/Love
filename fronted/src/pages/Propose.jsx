@@ -405,38 +405,304 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import API from "../utils/api";
+
+// export default function Propose() {
+//   const { username } = useParams();
+//   const navigate = useNavigate();
+//   const [data, setData] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [err, setErr] = useState("");
+
+//   useEffect(() => {
+//     if (!username) return;
+//     setLoading(true);
+
+//     API.get(`/user/propose/${username}`)
+//       .then((res) => {
+//         setData(res.data);
+//         setErr("");
+//         // ✅ Store name and photo in localStorage for No pages
+//         localStorage.setItem("girlName", res.data.girlfriend.name);
+//         localStorage.setItem("girlPhoto", res.data.girlfriend.photo || "");
+//       })
+//       .catch((e) => {
+//         console.error(e);
+//         setErr(e.response?.data?.message || "Proposal not found");
+//         setData(null);
+//       })
+//       .finally(() => setLoading(false));
+//   }, [username]);
+
+//   // Load Tenor script
+//   useEffect(() => {
+//     const script = document.createElement("script");
+//     script.src = "https://tenor.com/embed.js";
+//     script.async = true;
+//     document.body.appendChild(script);
+//     return () => document.body.removeChild(script);
+//   }, []);
+
+//   const girlName = data?.girlfriend?.name || localStorage.getItem("girlName") || "My Love";
+//   const girlPhoto = data?.girlfriend?.photo || localStorage.getItem("girlPhoto");
+
+//   if (loading) return <div className="text-center mt-20 text-xl">Loading...</div>;
+//   if (err) return <div className="text-center mt-20 text-red-600 text-xl">{err}</div>;
+
+//   return (
+//     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-100 to-pink-300 p-4">
+//       <div className="flex flex-col items-center text-center gap-6 w-full max-w-md p-6 bg-white/90 rounded-xl shadow-lg">
+        
+//         {/* Girlfriend photo */}
+//         {girlPhoto && (
+//           <img
+//             src={girlPhoto}
+//             alt={girlName}
+//             className="w-48 h-48 object-cover rounded-full border-4 border-pink-400 shadow-lg"
+//           />
+//         )}
+
+//         {/* GIF */}
+//         <div
+//           className="tenor-gif-embed rounded-lg w-full max-w-[220px] h-auto"
+//           data-postid="22885016"
+//           data-share-method="host"
+//           data-aspect-ratio="1.04918"
+//           data-width="100%"
+//         >
+//           <a href="https://tenor.com/view/manja-gif-22885016">Manja Sticker</a> from{" "}
+//           <a href="https://tenor.com/search/manja-stickers">Manja Stickers</a>
+//         </div>
+
+//         <h1 className="text-3xl font-bold">Do you love me? 🤗</h1>
+//         <p className="text-lg">
+//           <span className="font-semibold">{girlName}</span> is all yours 💕
+//         </p>
+
+//         <div className="flex justify-center gap-5 mt-4 w-full">
+//           <button
+//             onClick={() => navigate("/yes")}
+//             className="px-6 py-3 bg-pink-400 text-white rounded-lg font-medium shadow-md hover:bg-pink-500 transition-transform hover:scale-105"
+//           >
+//             Yes
+//           </button>
+//           <button
+//             onClick={() => navigate("/no1")}
+//             className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium shadow-md hover:bg-gray-300 transition-transform hover:scale-105"
+//           >
+//             No
+//           </button>
+//         </div>
+
+//         <div className="fixed bottom-2 right-4 text-sm font-bold text-black/70">
+//           Srijon 💖
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import API from "../utils/api";
+
+// export default function Propose() {
+//   const { username, girlfriendId } = useParams(); // optionally accept girlfriendId
+//   const navigate = useNavigate();
+
+//   const [girlfriend, setGirlfriend] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [err, setErr] = useState("");
+
+//   useEffect(() => {
+//     if (!username) return;
+//     setLoading(true);
+
+//     const url = girlfriendId
+//       ? `/user/propose/${username}/${girlfriendId}` // fetch single girlfriend by ID
+//       : `/user/propose/${username}`;              // fetch all girlfriends
+
+//     API.get(url)
+//       .then((res) => {
+//         let gf;
+
+//         // New backend returns 'girlfriends' array for multiple, 'girlfriend' for single
+//         if (girlfriendId) {
+//           gf = res.data.girlfriend;
+//         } else if (res.data.girlfriends) {
+//           gf = res.data.girlfriends[0]; // take first girlfriend if multiple
+//         } else {
+//           gf = res.data.girlfriend || null; // fallback to legacy
+//         }
+
+//         if (!gf) {
+//           setErr("No proposal found");
+//           setGirlfriend(null);
+//           return;
+//         }
+
+//         setGirlfriend(gf);
+
+//         // store in localStorage for fallback
+//         localStorage.setItem("girlName", gf.name || "My Love");
+//         localStorage.setItem("girlPhoto", gf.photo || "");
+//       })
+//       .catch((e) => {
+//         console.error(e);
+//         setErr(e.response?.data?.message || "Proposal not found");
+//         setGirlfriend(null);
+//       })
+//       .finally(() => setLoading(false));
+//   }, [username, girlfriendId]);
+
+//   // Load Tenor GIF script
+//   useEffect(() => {
+//     const script = document.createElement("script");
+//     script.src = "https://tenor.com/embed.js";
+//     script.async = true;
+//     document.body.appendChild(script);
+//     return () => document.body.removeChild(script);
+//   }, []);
+
+//   const girlName =
+//     girlfriend?.name || localStorage.getItem("girlName") || "My Love";
+//   const girlPhoto =
+//     girlfriend?.photo || localStorage.getItem("girlPhoto") || "";
+
+//   if (loading)
+//     return <div className="text-center mt-20 text-xl">Loading...</div>;
+//   if (err)
+//     return (
+//       <div className="text-center mt-20 text-red-600 text-xl">{err}</div>
+//     );
+
+//   return (
+//     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-100 to-pink-300 p-4">
+//       <div className="flex flex-col items-center text-center gap-6 w-full max-w-md p-6 bg-white/90 rounded-xl shadow-lg">
+//         {/* Girlfriend photo */}
+//         {girlPhoto ? (
+//           <img
+//             src={girlPhoto}
+//             alt={girlName}
+//             className="w-48 h-48 object-cover rounded-full border-4 border-pink-400 shadow-lg"
+//           />
+//         ) : (
+//           <div className="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+//             No Photo
+//           </div>
+//         )}
+
+//         {/* GIF */}
+//         <div
+//           className="tenor-gif-embed rounded-lg w-full max-w-[220px] h-auto"
+//           data-postid="22885016"
+//           data-share-method="host"
+//           data-aspect-ratio="1.04918"
+//           data-width="100%"
+//         >
+//           <a href="https://tenor.com/view/manja-gif-22885016">Manja Sticker</a> from{" "}
+//           <a href="https://tenor.com/search/manja-stickers">Manja Stickers</a>
+//         </div>
+
+//         <h1 className="text-3xl font-bold">Do you love me? 🤗</h1>
+//         <p className="text-lg">
+//           <span className="font-semibold">{girlName}</span> is all yours 💕
+//         </p>
+
+//         <div className="flex justify-center gap-5 mt-4 w-full">
+//           <button
+//             onClick={() => navigate("/yes")}
+//             className="px-6 py-3 bg-pink-400 text-white rounded-lg font-medium shadow-md hover:bg-pink-500 transition-transform hover:scale-105"
+//           >
+//             Yes
+//           </button>
+//           <button
+//             onClick={() => navigate("/no1")}
+//             className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium shadow-md hover:bg-gray-300 transition-transform hover:scale-105"
+//           >
+//             No
+//           </button>
+//         </div>
+
+//         <div className="fixed bottom-2 right-4 text-sm font-bold text-black/70">
+//           Srijon 💖
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 
 export default function Propose() {
-  const { username } = useParams();
+  const { username, girlfriendId } = useParams(); // Get both username and gf id
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
+  const [girlfriend, setGirlfriend] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    if (!username) return;
+    if (!username || !girlfriendId) return;
     setLoading(true);
 
-    API.get(`/user/propose/${username}`)
+    API.get(`/user/propose/${username}/${girlfriendId}`)
       .then((res) => {
-        setData(res.data);
+        setGirlfriend(res.data.girlfriend);
         setErr("");
-        // ✅ Store name and photo in localStorage for No pages
+        // Save name & photo for fallback
         localStorage.setItem("girlName", res.data.girlfriend.name);
         localStorage.setItem("girlPhoto", res.data.girlfriend.photo || "");
       })
       .catch((e) => {
         console.error(e);
         setErr(e.response?.data?.message || "Proposal not found");
-        setData(null);
+        setGirlfriend(null);
       })
       .finally(() => setLoading(false));
-  }, [username]);
+  }, [username, girlfriendId]);
 
-  // Load Tenor script
+  // Load Tenor script for GIF
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://tenor.com/embed.js";
@@ -445,8 +711,8 @@ export default function Propose() {
     return () => document.body.removeChild(script);
   }, []);
 
-  const girlName = data?.girlfriend?.name || localStorage.getItem("girlName") || "My Love";
-  const girlPhoto = data?.girlfriend?.photo || localStorage.getItem("girlPhoto");
+  const girlName = girlfriend?.name || localStorage.getItem("girlName") || "My Love";
+  const girlPhoto = girlfriend?.photo || localStorage.getItem("girlPhoto");
 
   if (loading) return <div className="text-center mt-20 text-xl">Loading...</div>;
   if (err) return <div className="text-center mt-20 text-red-600 text-xl">{err}</div>;
@@ -503,18 +769,3 @@ export default function Propose() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

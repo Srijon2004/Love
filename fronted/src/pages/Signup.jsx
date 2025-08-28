@@ -483,147 +483,10 @@
 
 
 
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import API from "../utils/api.js";
-// import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-
-// export default function Signup() {
-//   const [form, setForm] = useState({ name: "", email: "", password: "" });
-//   const [err, setErr] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [showPass, setShowPass] = useState(false);
-//   const navigate = useNavigate();
-
-//   const submit = async (e) => {
-//     e.preventDefault();
-//     setErr("");
-//     setLoading(true);
-//     try {
-//       await API.post("/auth/signup", form);
-//       navigate("/login");
-//     } catch (error) {
-//       setErr(error.response?.data?.message || "Signup failed. Try again!");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-100 to-indigo-100">
-//       <form
-//         onSubmit={submit}
-//         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
-//       >
-//         <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">
-//           Create Account ✨
-//         </h2>
-
-//         {err && (
-//           <div className="text-red-600 bg-red-100 p-2 rounded mb-4 text-center">
-//             {err}
-//           </div>
-//         )}
-
-//         {/* Name */}
-//         <div className="relative mb-4">
-//           <User className="absolute left-3 top-3 text-gray-400" size={20} />
-//           <input
-//             required
-//             type="text"
-//             placeholder="Full Name"
-//             value={form.name}
-//             onChange={(e) => setForm({ ...form, name: e.target.value })}
-//             className="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-//           />
-//         </div>
-
-//         {/* Email */}
-//         <div className="relative mb-4">
-//           <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
-//           <input
-//             required
-//             type="email"
-//             placeholder="Email"
-//             value={form.email}
-//             onChange={(e) => setForm({ ...form, email: e.target.value })}
-//             className="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-//           />
-//         </div>
-
-//         {/* Password */}
-//         <div className="relative mb-6">
-//           <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-//           <input
-//             required
-//             type={showPass ? "text" : "password"}
-//             placeholder="Password"
-//             value={form.password}
-//             onChange={(e) => setForm({ ...form, password: e.target.value })}
-//             className="w-full pl-10 pr-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-//           />
-//           <button
-//             type="button"
-//             onClick={() => setShowPass(!showPass)}
-//             className="absolute right-3 top-3 text-gray-500"
-//           >
-//             {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-//           </button>
-//         </div>
-
-//         {/* Submit */}
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex justify-center items-center"
-//         >
-//           {loading ? "Signing up..." : "Signup"}
-//         </button>
-
-//         {/* Redirect */}
-//         <p className="text-center mt-4 text-gray-600">
-//           Already have an account?{" "}
-//           <button
-//             type="button"
-//             onClick={() => navigate("/login")}
-//             className="text-indigo-600 font-semibold hover:underline"
-//           >
-//             Login
-//           </button>
-//         </p>
-//       </form>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ...........
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api.js";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { auth, provider, signInWithPopup } from "../firebase";
 
 export default function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -632,48 +495,21 @@ export default function Signup() {
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
 
-  // Prevent multiple popups
-  let googlePopupOpen = false;
-
-  // Regular signup
   const submit = async (e) => {
     e.preventDefault();
     setErr("");
     setLoading(true);
     try {
-      await API.post("/auth/signup", form); // normal signup
+      await API.post("/auth/signup",  {
+      username: form.name,  // <-- map here
+      email: form.email,
+      password: form.password,
+    });
       navigate("/login");
     } catch (error) {
       setErr(error.response?.data?.message || "Signup failed. Try again!");
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Google Signup/Login
-  const handleGoogleSignup = async () => {
-    if (googlePopupOpen) return;
-    googlePopupOpen = true;
-    setErr("");
-
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      // Send Google info to backend
-      await API.post("/auth/google-signup", {
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-        googleId: user.uid,
-      });
-
-      navigate("/dashboard"); // redirect after login
-    } catch (error) {
-      console.error(error);
-      setErr("Google signup/login failed. Try again!");
-    } finally {
-      googlePopupOpen = false;
     }
   };
 
@@ -739,22 +575,13 @@ export default function Signup() {
           </button>
         </div>
 
-        {/* Signup Button */}
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex justify-center items-center mb-4"
+          className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex justify-center items-center"
         >
           {loading ? "Signing up..." : "Signup"}
-        </button>
-
-        {/* Google Signup/Login */}
-        <button
-          type="button"
-          onClick={handleGoogleSignup}
-          className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex justify-center items-center mb-4"
-        >
-          Signup/Login with Google
         </button>
 
         {/* Redirect */}
@@ -772,3 +599,4 @@ export default function Signup() {
     </div>
   );
 }
+
