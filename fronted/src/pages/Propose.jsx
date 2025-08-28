@@ -670,13 +670,12 @@
 
 
 
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 
 export default function Propose() {
-  const { username, girlfriendId } = useParams(); // Get both username and gf id
+  const { username, girlfriendId } = useParams();
   const navigate = useNavigate();
   const [girlfriend, setGirlfriend] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -690,7 +689,6 @@ export default function Propose() {
       .then((res) => {
         setGirlfriend(res.data.girlfriend);
         setErr("");
-        // Save name & photo for fallback
         localStorage.setItem("girlName", res.data.girlfriend.name);
         localStorage.setItem("girlPhoto", res.data.girlfriend.photo || "");
       })
@@ -702,7 +700,6 @@ export default function Propose() {
       .finally(() => setLoading(false));
   }, [username, girlfriendId]);
 
-  // Load Tenor script for GIF
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://tenor.com/embed.js";
@@ -721,7 +718,6 @@ export default function Propose() {
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-100 to-pink-300 p-4">
       <div className="flex flex-col items-center text-center gap-6 w-full max-w-md p-6 bg-white/90 rounded-xl shadow-lg">
         
-        {/* Girlfriend photo */}
         {girlPhoto && (
           <img
             src={girlPhoto}
@@ -730,7 +726,6 @@ export default function Propose() {
           />
         )}
 
-        {/* GIF */}
         <div
           className="tenor-gif-embed rounded-lg w-full max-w-[220px] h-auto"
           data-postid="22885016"
