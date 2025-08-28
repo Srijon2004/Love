@@ -101,7 +101,48 @@ router.post("/logout", (req, res) => {
 });
 
 
+router.post("/google", async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    
+    // Verify the ID token with Firebase Admin
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { name, email } = decodedToken;
 
+    // Check if user already exists
+    let user = await User.findOne({ email });
+
+    // If user doesn't exist, create a new one
+    if (!user) {
+      // For Google-signed-up users, you can generate a random password or leave it empty
+      // as they won't use it to log in.
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(tempPassword, salt);
+      
+      user = new User({
+        username: name,
+        email,
+        password: hashedPassword, // A placeholder password
+      });
+      await user.save();
+    }
+
+    // Create a JWT for your application
+    const payload = { user: { id: user.id, username: user.username } };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res
+      .cookie("token", token, { httpOnly: true, sameSite: "lax" })
+      .json({ token, username: user.username, email: user.email });
+
+  } catch (error) {
+    console.error("Google auth error", error);
+    res.status(401).json({ message: "Google authentication failed." });
+  }
+});
 
 
 
