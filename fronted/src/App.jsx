@@ -219,6 +219,9 @@ import No1 from './pages/No1'
 import No2 from './pages/No2'
 import No3 from './pages/No3'
 import Yes from './pages/Yes'
+import ProposeForm from './pages/ProposeForm'
+import EditProposal from './pages/EditProposal'
+
 
 export default function App() {
   return (
@@ -230,6 +233,8 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+           <Route path="/propose-form" element={<ProposeForm />} /> 
+          <Route path="/edit-proposal/:girlfriendId" element={<EditProposal />}/>
           <Route path="/propose/:username/:girlfriendId" element={<Propose />} />
           <Route path="/no1" element={<No1 />} />
           <Route path="/no2" element={<No2 />} />
