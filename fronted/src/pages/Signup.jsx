@@ -651,6 +651,7 @@ import API from "../utils/api.js";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 // Import Firebase auth functions
 import { auth, provider, signInWithPopup } from "../firebase";
+import toast from "react-hot-toast";
 
 export default function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -718,13 +719,15 @@ export default function Signup() {
       // JWT will be set in cookie if backend uses httpOnly cookie
       // Optionally store in localStorage:
       localStorage.setItem("token", res.data.token);
-      alert("Signed in successfully!");
+      // alert("Signed in successfully!");
+      toast.success("Signed in successfully!");
       // JSON.message("Signed in successfully!");
       navigate("/login");
       console.log("User:", res.data.user);
     } catch (error) {
       console.error(error);
-      alert("Google Sign-In failed!");
+      // alert("Google Sign-In failed!");
+      toast.success("Google Sign-In failed!")
     }
   };
 

@@ -488,6 +488,7 @@ import API from "../utils/api.js";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 // Import Firebase auth functions
 import { auth, provider, signInWithPopup } from "../firebase";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -550,12 +551,14 @@ export default function Login() {
       // Optional: store JWT token if your backend returns it
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("username", res.data.user.username);
-      alert("Login successful!");
+      // alert("Login successful!");
+      toast.success("Login successful!")
       // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Google Sign-In failed!");
+      // alert("Google Sign-In failed!");
+      toast.success("Google Sign-In failed!")
     }
   };
 
