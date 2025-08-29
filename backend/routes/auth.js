@@ -224,53 +224,98 @@ router.post("/logout", (req, res) => {
 
 // backend/routes/auth.js
 
+// router.post("/google", async (req, res) => {
+//   const { email, name, uid } = req.body;
+
+//   try {
+//     // Check if a user with this email already exists
+//     let user = await User.findOne({ email });
+
+//     // If the user does not exist, create a new one
+//     if (!user) {
+//       user = await User.create({
+//         username: name, // Use 'name' from Google as the 'username'
+//         email,
+//         firebaseUID: uid,
+//         // Password is not needed for Google Sign-In
+//       });
+//     }
+
+//     // --- THIS IS THE FIX ---
+//     // The payload now creates a nested 'user' object with an 'id',
+//     // which matches the structure of your manual login token.
+//     // This ensures that your `auth` middleware will always find `req.user.id`.
+//     const payload = {
+//       user: {
+//         id: user.id,
+//         username: user.username
+//       }
+//     };
+
+//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+//     // Send back the token and user info to the frontend
+//     res.status(200).json({
+//         token,
+//         user: {
+//             id: user._id,
+//             username: user.username,
+//             email: user.email
+//         }
+//     });
+
+//   } catch (err) {
+//     console.error("Error during Google Sign-In:", err.message);
+//     res.status(500).json({ message: "Server error during Google Sign-In" });
+//   }
+// });
+
+
+
+
+
+
+
+
 router.post("/google", async (req, res) => {
-  const { email, name, uid } = req.body;
+  const { email, name, photo, uid } = req.body;
 
   try {
-    // Check if a user with this email already exists
+    // Step 1: Check if user already exists by email
     let user = await User.findOne({ email });
 
-    // If the user does not exist, create a new one
     if (!user) {
-      user = await User.create({
-        username: name, // Use 'name' from Google as the 'username'
+      // Step 2: If not exists, create new
+      user = new User({
         email,
-        firebaseUID: uid,
-        // Password is not needed for Google Sign-In
+        name,
+        profilePhoto: photo,
+        googleId: uid,
+        authType: "google"
       });
+      await user.save();
+    } else {
+      // Step 3: If exists, update with Google details (optional)
+      if (!user.googleId) {
+        user.googleId = uid;
+        user.authType = "manual+google"; // mark linked account
+        if (!user.profilePhoto) user.profilePhoto = photo;
+        await user.save();
+      }
     }
 
-    // --- THIS IS THE FIX ---
-    // The payload now creates a nested 'user' object with an 'id',
-    // which matches the structure of your manual login token.
-    // This ensures that your `auth` middleware will always find `req.user.id`.
-    const payload = {
-      user: {
-        id: user.id,
-        username: user.username
-      }
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-    // Send back the token and user info to the frontend
-    res.status(200).json({
-        token,
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
-        }
+    // Step 4: Issue JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d"
     });
 
+    res.cookie("token", token, { httpOnly: true });
+    res.json({ success: true, user, token });
   } catch (err) {
-    console.error("Error during Google Sign-In:", err.message);
-    res.status(500).json({ message: "Server error during Google Sign-In" });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
-
-
 
 
 
