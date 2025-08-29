@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import API from '../utils/api';
+import {toast} from "react-hot-toast";
 
 export default function EditProposal() {
     const { girlfriendId } = useParams(); // Get the ID from the URL
@@ -9,6 +10,7 @@ export default function EditProposal() {
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+    
 
     // 1. Fetch the existing proposal data when the page loads
     useEffect(() => {
