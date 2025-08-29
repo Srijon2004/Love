@@ -170,6 +170,60 @@ router.post("/logout", (req, res) => {
 
 
 
+// router.post("/google", async (req, res) => {
+//   const { email, name, uid } = req.body;
+
+//   try {
+//     // Check if a user with this email already exists
+//     let user = await User.findOne({ email });
+
+//     // If the user does not exist, create a new one
+//     if (!user) {
+//       user = await User.create({
+//         username: name, // Use 'name' from Google as the 'username'
+//         email,
+//         firebaseUID: uid,
+//         // Password is not needed for Google Sign-In
+//       });
+//     }
+
+//     // --- THIS IS THE FIX ---
+//     // The payload now creates a nested 'user' object with an 'id',
+//     // which matches the structure of your manual login token.
+//     // This ensures that your `auth` middleware will always find `req.user.id`.
+//     const payload = { 
+//       user: { 
+//         id: user.id, 
+//         username: user.username 
+//       } 
+//     };
+    
+//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+//     // Send back the token and user info to the frontend
+//     res.status(200).json({ 
+//         token, 
+//         user: { 
+//             id: user._id, 
+//             username: user.username, 
+//             email: user.email 
+//         } 
+//     });
+
+//   } catch (err) {
+//     console.error("Error during Google Sign-In:", err.message);
+//     res.status(500).json({ message: "Server error during Google Sign-In" });
+//   }
+// });
+
+
+
+
+
+
+
+// backend/routes/auth.js
+
 router.post("/google", async (req, res) => {
   const { email, name, uid } = req.body;
 
@@ -191,23 +245,23 @@ router.post("/google", async (req, res) => {
     // The payload now creates a nested 'user' object with an 'id',
     // which matches the structure of your manual login token.
     // This ensures that your `auth` middleware will always find `req.user.id`.
-    const payload = { 
-      user: { 
-        id: user.id, 
-        username: user.username 
-      } 
+    const payload = {
+      user: {
+        id: user.id,
+        username: user.username
+      }
     };
-    
+
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     // Send back the token and user info to the frontend
-    res.status(200).json({ 
-        token, 
-        user: { 
-            id: user._id, 
-            username: user.username, 
-            email: user.email 
-        } 
+    res.status(200).json({
+        token,
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
     });
 
   } catch (err) {
