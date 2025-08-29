@@ -482,11 +482,206 @@
 
 
 // ...................................
+// import React, { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from "../utils/api.js";
+// import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+// // Import Firebase auth functions
+// import { auth, provider, signInWithPopup } from "../firebase";
+// import toast from "react-hot-toast";
+
+// export default function Login() {
+//   const [form, setForm] = useState({ email: "", password: "" });
+//   const [err, setErr] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [showPass, setShowPass] = useState(false);
+//   const navigate = useNavigate();
+
+//   const submit = async (e) => {
+//     e.preventDefault();
+//     setErr("");
+//     setLoading(true);
+//     try {
+//       const res = await API.post("/auth/login", form);
+//       localStorage.setItem("token", res.data.token);
+//       localStorage.setItem("username", res.data.username);
+//       navigate("/dashboard");
+//     } catch (error) {
+//       setErr(error.response?.data?.message || "Login failed. Try again!");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Google Sign-in Handler
+//   // const handleGoogleSignIn = async () => {
+//   //   try {
+//   //     const result = await signInWithPopup(auth, provider);
+//   //     // The ID token is sent to your backend for verification
+//   //     const idToken = await result.user.getIdToken();
+
+//   //     // Make a request to your new backend endpoint
+//   //     const res = await API.post("/auth/google", { idToken });
+      
+//   //     // Save the token from your backend and navigate
+//   //     localStorage.setItem("token", res.data.token);
+//   //     navigate("/dashboard");
+
+//   //   } catch (error) {
+//   //     console.error("Google Sign-In Error", error);
+//   //     setErr("Google Sign-In failed. Please try again.");
+//   //   }
+//   // };
+
+
+//      const handleGoogleSignIn = async () => {
+//     try {
+//       // Firebase popup login
+//       const result = await signInWithPopup(auth, provider);
+//       const user = result.user;
+
+//       // Send user info to backend
+//       const res = await API.post("/v1/auth/google", {
+//         email: user.email,
+//         name: user.displayName,
+//         photo: user.photoURL,
+//         uid: user.uid,
+//       });
+
+//       // Optional: store JWT token if your backend returns it
+//       localStorage.setItem("token", res.data.token);
+//       localStorage.setItem("username", res.data.user.username);
+//       // alert("Login successful!");
+//       toast.success("Login successful!")
+//       // Redirect to dashboard
+//       navigate("/dashboard");
+//     } catch (err) {
+//       console.error(err);
+//       // alert("Google Sign-In failed!");
+//       toast.success("Google Sign-In failed!")
+//     }
+//   };
+
+//   return (
+//     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-pink-100 to-indigo-100">
+//       <form
+//         onSubmit={submit}
+//         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
+//       >
+//         <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">
+//           Welcome Back 👋
+//         </h2>
+
+//         {err && (
+//           <div className="text-red-600 bg-red-100 p-2 rounded mb-4 text-center">
+//             {err}
+//           </div>
+//         )}
+
+//         {/* Email */}
+//         <div className="relative mb-4">
+//           <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+//           <input
+//             required
+//             type="email"
+//             placeholder="Email"
+//             value={form.email}
+//             onChange={(e) => setForm({ ...form, email: e.target.value })}
+//             className="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+//           />
+//         </div>
+
+//         {/* Password */}
+//         <div className="relative mb-6">
+//           <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+//           <input
+//             required
+//             type={showPass ? "text" : "password"}
+//             placeholder="Password"
+//             value={form.password}
+//             onChange={(e) => setForm({ ...form, password: e.target.value })}
+//             className="w-full pl-10 pr-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
+//           />
+//           <button
+//             type="button"
+//             onClick={() => setShowPass(!showPass)}
+//             className="absolute right-3 top-3 text-gray-500"
+//           >
+//             {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+//           </button>
+//         </div>
+
+//         {/* Submit button */}
+//         <button
+//           type="submit"
+//           disabled={loading}
+//           className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex justify-center items-center"
+//         >
+//           {loading ? "Logging in..." : "Login"}
+//         </button>
+
+//         <div className="my-4 flex items-center">
+//             <div className="flex-grow border-t border-gray-300"></div>
+//             <span className="flex-shrink mx-4 text-gray-400">or</span>
+//             <div className="flex-grow border-t border-gray-300"></div>
+//         </div>
+
+//         {/* Google Login Button */}
+//         <button
+//           type="button"
+//           onClick={handleGoogleSignIn}
+//           className="w-full py-3 border flex justify-center items-center gap-2 rounded-lg hover:bg-gray-100 transition"
+//         >
+//           <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
+//           <span>Sign in with Google</span>
+//         </button>
+
+//         {/* Signup redirect */}
+//         <p className="text-center mt-4 text-gray-600">
+//           Don’t have an account?{" "}
+//           <button
+//             type="button"
+//             onClick={() => navigate("/signup")}
+//             className="text-indigo-600 font-semibold hover:underline"
+//           >
+//             Signup
+//           </button>
+//         </p>
+//       </form>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// mob
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api.js";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-// Import Firebase auth functions
 import { auth, provider, signInWithPopup } from "../firebase";
 import toast from "react-hot-toast";
 
@@ -513,34 +708,11 @@ export default function Login() {
     }
   };
 
-  // Google Sign-in Handler
-  // const handleGoogleSignIn = async () => {
-  //   try {
-  //     const result = await signInWithPopup(auth, provider);
-  //     // The ID token is sent to your backend for verification
-  //     const idToken = await result.user.getIdToken();
-
-  //     // Make a request to your new backend endpoint
-  //     const res = await API.post("/auth/google", { idToken });
-      
-  //     // Save the token from your backend and navigate
-  //     localStorage.setItem("token", res.data.token);
-  //     navigate("/dashboard");
-
-  //   } catch (error) {
-  //     console.error("Google Sign-In Error", error);
-  //     setErr("Google Sign-In failed. Please try again.");
-  //   }
-  // };
-
-
-     const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
     try {
-      // Firebase popup login
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Send user info to backend
       const res = await API.post("/v1/auth/google", {
         email: user.email,
         name: user.displayName,
@@ -548,27 +720,23 @@ export default function Login() {
         uid: user.uid,
       });
 
-      // Optional: store JWT token if your backend returns it
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("username", res.data.user.username);
-      // alert("Login successful!");
       toast.success("Login successful!")
-      // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      // alert("Google Sign-In failed!");
-      toast.success("Google Sign-In failed!")
+      toast.error("Google Sign-In failed!")
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-pink-100 to-indigo-100">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-pink-100 to-indigo-100 px-4">
       <form
         onSubmit={submit}
-        className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
+        className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-xl"
       >
-        <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-indigo-700 mb-6">
           Welcome Back 👋
         </h2>
 
@@ -578,7 +746,6 @@ export default function Login() {
           </div>
         )}
 
-        {/* Email */}
         <div className="relative mb-4">
           <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
@@ -591,7 +758,6 @@ export default function Login() {
           />
         </div>
 
-        {/* Password */}
         <div className="relative mb-6">
           <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
@@ -611,7 +777,6 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
@@ -626,7 +791,6 @@ export default function Login() {
             <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        {/* Google Login Button */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
@@ -636,7 +800,6 @@ export default function Login() {
           <span>Sign in with Google</span>
         </button>
 
-        {/* Signup redirect */}
         <p className="text-center mt-4 text-gray-600">
           Don’t have an account?{" "}
           <button
@@ -651,171 +814,3 @@ export default function Login() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// dffffffffffffffffffffffffffffff
-// import React from "react";
-// import { useNavigate } from "react-router-dom";
-// import API from "../utils/api.js";
-// import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-// // Import Firebase auth functions
-// import { auth, provider, signInWithPopup } from "../firebase";
-
-// export default function Login() {
-//   const [form, setForm] = React.useState({ email: "", password: "" });
-//   const [err, setErr] = React.useState("");
-//   const [loading, setLoading] = React.useState(false);
-//   const [showPass, setShowPass] = React.useState(false);
-//   const navigate = useNavigate();
-
-//   const submit = async (e) => {
-//     e.preventDefault();
-//     setErr("");
-//     setLoading(true);
-//     try {
-//       const res = await API.post("/auth/login", form);
-//       localStorage.setItem("token", res.data.token);
-//       // ✅ ADD THIS LINE TO SAVE THE USERNAME ON MANUAL LOGIN
-//       localStorage.setItem("username", res.data.username); 
-//       navigate("/dashboard");
-//     } catch (error) {
-//       setErr(error.response?.data?.message || "Login failed. Try again!");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleGoogleSignIn = async () => {
-//     try {
-//       const result = await signInWithPopup(auth, provider);
-//       const user = result.user;
-
-//       const res = await API.post("/v1/auth/google", {
-//         email: user.email,
-//         name: user.displayName,
-//         photo: user.photoURL,
-//         uid: user.uid,
-//       });
-
-//       localStorage.setItem("token", res.data.token);
-//       // This part is already correct for Google login
-//       localStorage.setItem("username", res.data.user.username);
-
-//       alert("Login successful!");
-//       navigate("/dashboard");
-//     } catch (err) {
-//       console.error(err);
-//       alert("Google Sign-In failed!");
-//     }
-//   };
-
-//   return (
-//     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-pink-100 to-indigo-100">
-//       <form
-//         onSubmit={submit}
-//         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl"
-//       >
-//         <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">
-//           Welcome Back 👋
-//         </h2>
-
-//         {err && (
-//           <div className="text-red-600 bg-red-100 p-2 rounded mb-4 text-center">
-//             {err}
-//           </div>
-//         )}
-
-//         <div className="relative mb-4">
-//           <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
-//           <input
-//             required
-//             type="email"
-//             placeholder="Email"
-//             value={form.email}
-//             onChange={(e) => setForm({ ...form, email: e.target.value })}
-//             className="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-//           />
-//         </div>
-
-//         <div className="relative mb-6">
-//           <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-//           <input
-//             required
-//             type={showPass ? "text" : "password"}
-//             placeholder="Password"
-//             value={form.password}
-//             onChange={(e) => setForm({ ...form, password: e.target.value })}
-//             className="w-full pl-10 pr-10 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-//           />
-//           <button
-//             type="button"
-//             onClick={() => setShowPass(!showPass)}
-//             className="absolute right-3 top-3 text-gray-500"
-//           >
-//             {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-//           </button>
-//         </div>
-
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex justify-center items-center"
-//         >
-//           {loading ? "Logging in..." : "Login"}
-//         </button>
-
-//         <div className="my-4 flex items-center">
-//             <div className="flex-grow border-t border-gray-300"></div>
-//             <span className="flex-shrink mx-4 text-gray-400">or</span>
-//             <div className="flex-grow border-t border-gray-300"></div>
-//         </div>
-
-//         <button
-//           type="button"
-//           onClick={handleGoogleSignIn}
-//           className="w-full py-3 border flex justify-center items-center gap-2 rounded-lg hover:bg-gray-100 transition"
-//         >
-//           <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
-//           <span>Sign in with Google</span>
-//         </button>
-
-//         <p className="text-center mt-4 text-gray-600">
-//           Don’t have an account?{" "}
-//           <button
-//             type="button"
-//             onClick={() => navigate("/signup")}
-//             className="text-indigo-600 font-semibold hover:underline"
-//           >
-//             Signup
-//           </button>
-//         </p>
-//       </form>
-//     </div>
-//   );
-// }

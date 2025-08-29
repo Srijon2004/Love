@@ -1565,6 +1565,360 @@
 
 
 
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from '../utils/api';
+// import { Pencil, Trash2, Eye, PlusCircle, BarChart2 } from 'lucide-react';
+// import toast from "react-hot-toast";
+
+// // Card for a single proposal
+// // Card for a single proposal
+// const ProposalCard = ({ proposal, username, onDelete }) => {
+//     const navigate = useNavigate();
+//     const proposalLink = `${window.location.origin}/propose/${username}/${proposal._id}`;
+
+//     const handleCopyLink = () => {
+//         navigator.clipboard.writeText(proposalLink);
+//         // you can replace alert with toast/notification later
+//          toast.success("Link copied to clipboard! 🚀");
+//     };
+
+//     return (
+//         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200/80">
+//             <div className="flex items-center justify-between mb-3">
+//                 <div className="flex items-center gap-4">
+//                     <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 text-xl font-bold">
+//                         {proposal.name.charAt(0).toUpperCase()}
+//                     </div>
+//                     <div>
+//                         <h3 className="text-xl font-bold text-gray-800">{proposal.name}</h3>
+//                         <p className="text-sm text-gray-500">Created: {new Date(proposal.createdAt).toLocaleDateString()}</p>
+//                     </div>
+//                 </div>
+//                 <div className="flex items-center gap-2">
+//                     <button
+//                         onClick={() => navigate(`/edit-proposal/${proposal._id}`)}
+//                         title="Edit"
+//                         className="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
+//                     >
+//                         <Pencil size={18} />
+//                     </button>
+//                     <button
+//                         onClick={() => onDelete(proposal._id)}
+//                         title="Delete"
+//                         className="p-2 rounded-full text-gray-400 hover:bg-red-100 hover:text-red-600 transition"
+//                     >
+//                         <Trash2 size={18} />
+//                     </button>
+//                 </div>
+//             </div>
+
+//             <div className="flex items-center justify-between">
+//                 <p className="text-sm text-gray-500 truncate mr-4">{proposalLink}</p>
+//                 <div className="flex items-center gap-2">
+//                     <button
+//                         onClick={handleCopyLink}
+//                         className="flex items-center gap-2 text-sm bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition"
+//                     >
+//                         📋 Copy
+//                     </button>
+//                     <a
+//                         href={proposalLink}
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         className="flex items-center gap-2 text-sm bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 font-semibold transition shadow-sm"
+//                     >
+//                         <Eye size={16} /> View
+//                     </a>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+
+
+// // Main Dashboard Component
+// export default function Dashboard() {
+//     const [proposals, setProposals] = useState([]);
+//     const navigate = useNavigate();
+//     const token = localStorage.getItem("token");
+//     const username = localStorage.getItem("username");
+
+//     useEffect(() => {
+//         if (!token) navigate('/login');
+//         else fetchProposals();
+//     }, [token, navigate]);
+
+//     const fetchProposals = async () => {
+//         if (!token) return;
+//         try {
+//             // Use the new, secure endpoint that relies on the token, not the username
+//             const res = await API.get('/user/my-proposals', {
+//                 headers: { Authorization: `Bearer ${token}` }
+//             });
+//             setProposals(res.data.girlfriends.reverse());
+//         } catch (err) {
+//             console.error("Failed to fetch proposals", err);
+//         }
+//     };
+
+//     const handleDelete = async (girlfriendId) => {
+//         if (window.confirm("Are you sure you want to delete this proposal?")) {
+//             try {
+//                 await API.delete(`/user/girlfriend/${girlfriendId}`, { headers: { Authorization: `Bearer ${token}` } });
+//                 fetchProposals();
+//             } catch(err) {
+//                 alert('Could not delete the proposal.');
+//             }
+//         }
+//     };
+
+//     return (
+//         <div className="min-h-screen w-full bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+//             <div className="max-w-7xl mx-auto">
+//                 <div className="mb-8">
+//                     <h1 className="text-5xl font-extrabold text-gray-900">Welcome, {username}!</h1>
+//                     <p className="text-gray-500 mt-1 text-lg">Here are all your beautiful proposals.</p>
+//                 </div>
+
+//                 {/* Top Action Cards */}
+//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+//                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200/80 flex items-center justify-between">
+//                         <div>
+//                             <div className="flex items-center gap-3 mb-1">
+//                                 <BarChart2 className="text-gray-400" size={24} />
+//                                 <h2 className="text-xl font-bold text-gray-700">Quick Stats</h2>
+//                             </div>
+//                             <p className="text-gray-500">You have created <span className="font-bold text-gray-800">{proposals.length}</span> proposals.</p>
+//                         </div>
+//                         <div className="text-gray-800 p-4 rounded-lg text-center">
+//                             <span className="font-extrabold text-5xl">{proposals.length}</span>
+//                         </div>
+//                     </div>
+//                     <button
+//                         onClick={() => navigate('/propose-form')}
+//                         className="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-6 rounded-xl shadow-lg flex items-center gap-4 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.03]"
+//                     >
+//                         <PlusCircle size={32} />
+//                         <div>
+//                             <h2 className="text-2xl font-bold text-left">Create a New Proposal</h2>
+//                             <p className="text-left text-pink-100">Click here to start a new page.</p>
+//                         </div>
+//                     </button>
+//                 </div>
+
+//                 {/* Main content: List of proposals */}
+//                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Your Proposals</h2>
+//                 <div className="space-y-4">
+//                     {proposals.length > 0 ? (
+//                         proposals.map(p => <ProposalCard key={p._id} proposal={p} username={username} onDelete={handleDelete}/>)
+//                     ) : (
+//                         <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200/80">
+//                             <h3 className="text-2xl font-bold text-gray-700">No Proposals Yet!</h3>
+//                             <p className="text-gray-500 mt-2">Click the "Create a New Proposal" button to begin.</p>
+//                         </div>
+//                     )}
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// mob
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from '../utils/api';
+// import { Pencil, Trash2, Eye, PlusCircle, BarChart2 } from 'lucide-react';
+// import toast from "react-hot-toast";
+
+// // Card for a single proposal
+// const ProposalCard = ({ proposal, username, onDelete }) => {
+//     const navigate = useNavigate();
+//     const proposalLink = `${window.location.origin}/propose/${username}/${proposal._id}`;
+
+//     const handleCopyLink = () => {
+//         navigator.clipboard.writeText(proposalLink);
+//         toast.success("Link copied to clipboard! 🚀");
+//     };
+
+//     return (
+//         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200/80">
+//             <div className="flex items-center justify-between mb-3">
+//                 <div className="flex items-center gap-4">
+//                     <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 text-xl font-bold">
+//                         {proposal.name.charAt(0).toUpperCase()}
+//                     </div>
+//                     <div>
+//                         <h3 className="text-xl font-bold text-gray-800">{proposal.name}</h3>
+//                         <p className="text-sm text-gray-500">Created: {new Date(proposal.createdAt).toLocaleDateString()}</p>
+//                     </div>
+//                 </div>
+//                 <div className="flex items-center gap-2">
+//                     <button
+//                         onClick={() => navigate(`/edit-proposal/${proposal._id}`)}
+//                         title="Edit"
+//                         className="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
+//                     >
+//                         <Pencil size={18} />
+//                     </button>
+//                     <button
+//                         onClick={() => onDelete(proposal._id)}
+//                         title="Delete"
+//                         className="p-2 rounded-full text-gray-400 hover:bg-red-100 hover:text-red-600 transition"
+//                     >
+//                         <Trash2 size={18} />
+//                     </button>
+//                 </div>
+//             </div>
+
+//             <div className="flex flex-col sm:flex-row items-center justify-between">
+//                 <p className="text-sm text-gray-500 truncate mr-4 mb-2 sm:mb-0">{proposalLink}</p>
+//                 <div className="flex items-center gap-2">
+//                     <button
+//                         onClick={handleCopyLink}
+//                         className="flex items-center gap-2 text-sm bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition"
+//                     >
+//                         📋 Copy
+//                     </button>
+//                     <a
+//                         href={proposalLink}
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         className="flex items-center gap-2 text-sm bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 font-semibold transition shadow-sm"
+//                     >
+//                         <Eye size={16} /> View
+//                     </a>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+
+
+// // Main Dashboard Component
+// export default function Dashboard() {
+//     const [proposals, setProposals] = useState([]);
+//     const navigate = useNavigate();
+//     const token = localStorage.getItem("token");
+//     const username = localStorage.getItem("username");
+
+//     useEffect(() => {
+//         if (!token) navigate('/login');
+//         else fetchProposals();
+//     }, [token, navigate]);
+
+//     const fetchProposals = async () => {
+//         if (!token) return;
+//         try {
+//             const res = await API.get('/user/my-proposals', {
+//                 headers: { Authorization: `Bearer ${token}` }
+//             });
+//             setProposals(res.data.girlfriends.reverse());
+//         } catch (err) {
+//             console.error("Failed to fetch proposals", err);
+//         }
+//     };
+
+//     const handleDelete = async (girlfriendId) => {
+//         if (window.confirm("Are you sure you want to delete this proposal?")) {
+//             try {
+//                 await API.delete(`/user/girlfriend/${girlfriendId}`, { headers: { Authorization: `Bearer ${token}` } });
+//                 fetchProposals();
+//             } catch(err) {
+//                 alert('Could not delete the proposal.');
+//             }
+//         }
+//     };
+
+//     return (
+//         <div className="min-h-screen w-full bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+//             <div className="max-w-7xl mx-auto">
+//                 <div className="mb-8">
+//                     <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900">Welcome, {username}!</h1>
+//                     <p className="text-gray-500 mt-1 text-lg">Here are all your beautiful proposals.</p>
+//                 </div>
+
+//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+//                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200/80 flex items-center justify-between">
+//                         <div>
+//                             <div className="flex items-center gap-3 mb-1">
+//                                 <BarChart2 className="text-gray-400" size={24} />
+//                                 <h2 className="text-xl font-bold text-gray-700">Quick Stats</h2>
+//                             </div>
+//                             <p className="text-gray-500">You have created <span className="font-bold text-gray-800">{proposals.length}</span> proposals.</p>
+//                         </div>
+//                         <div className="text-gray-800 p-4 rounded-lg text-center">
+//                             <span className="font-extrabold text-4xl sm:text-5xl">{proposals.length}</span>
+//                         </div>
+//                     </div>
+//                     <button
+//                         onClick={() => navigate('/propose-form')}
+//                         className="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-6 rounded-xl shadow-lg flex items-center gap-4 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.03]"
+//                     >
+//                         <PlusCircle size={32} />
+//                         <div>
+//                             <h2 className="text-xl sm:text-2xl font-bold text-left">Create a New Proposal</h2>
+//                             <p className="text-left text-pink-100">Click here to start a new page.</p>
+//                         </div>
+//                     </button>
+//                 </div>
+
+//                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Your Proposals</h2>
+//                 <div className="space-y-4">
+//                     {proposals.length > 0 ? (
+//                         proposals.map(p => <ProposalCard key={p._id} proposal={p} username={username} onDelete={handleDelete}/>)
+//                     ) : (
+//                         <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200/80">
+//                             <h3 className="text-2xl font-bold text-gray-700">No Proposals Yet!</h3>
+//                             <p className="text-gray-500 mt-2">Click the "Create a New Proposal" button to begin.</p>
+//                         </div>
+//                     )}
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from '../utils/api';
@@ -1572,15 +1926,13 @@ import { Pencil, Trash2, Eye, PlusCircle, BarChart2 } from 'lucide-react';
 import toast from "react-hot-toast";
 
 // Card for a single proposal
-// Card for a single proposal
 const ProposalCard = ({ proposal, username, onDelete }) => {
     const navigate = useNavigate();
     const proposalLink = `${window.location.origin}/propose/${username}/${proposal._id}`;
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(proposalLink);
-        // you can replace alert with toast/notification later
-         toast.success("Link copied to clipboard! 🚀");
+        toast.success("Link copied to clipboard! 🚀");
     };
 
     return (
@@ -1613,9 +1965,10 @@ const ProposalCard = ({ proposal, username, onDelete }) => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-500 truncate mr-4">{proposalLink}</p>
-                <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between">
+                 {/* This is the fix: replaced truncate with break-all */}
+                <p className="text-sm text-gray-500 break-all mr-4 mb-2 sm:mb-0">{proposalLink}</p>
+                <div className="flex items-center gap-2 mt-2 sm:mt-0">
                     <button
                         onClick={handleCopyLink}
                         className="flex items-center gap-2 text-sm bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition"
@@ -1653,7 +2006,6 @@ export default function Dashboard() {
     const fetchProposals = async () => {
         if (!token) return;
         try {
-            // Use the new, secure endpoint that relies on the token, not the username
             const res = await API.get('/user/my-proposals', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -1678,11 +2030,10 @@ export default function Dashboard() {
         <div className="min-h-screen w-full bg-gray-50 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-5xl font-extrabold text-gray-900">Welcome, {username}!</h1>
+                    <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900">Welcome, {username}!</h1>
                     <p className="text-gray-500 mt-1 text-lg">Here are all your beautiful proposals.</p>
                 </div>
 
-                {/* Top Action Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200/80 flex items-center justify-between">
                         <div>
@@ -1693,7 +2044,7 @@ export default function Dashboard() {
                             <p className="text-gray-500">You have created <span className="font-bold text-gray-800">{proposals.length}</span> proposals.</p>
                         </div>
                         <div className="text-gray-800 p-4 rounded-lg text-center">
-                            <span className="font-extrabold text-5xl">{proposals.length}</span>
+                            <span className="font-extrabold text-4xl sm:text-5xl">{proposals.length}</span>
                         </div>
                     </div>
                     <button
@@ -1702,13 +2053,12 @@ export default function Dashboard() {
                     >
                         <PlusCircle size={32} />
                         <div>
-                            <h2 className="text-2xl font-bold text-left">Create a New Proposal</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold text-left">Create a New Proposal</h2>
                             <p className="text-left text-pink-100">Click here to start a new page.</p>
                         </div>
                     </button>
                 </div>
 
-                {/* Main content: List of proposals */}
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Your Proposals</h2>
                 <div className="space-y-4">
                     {proposals.length > 0 ? (
@@ -1724,18 +2074,3 @@ export default function Dashboard() {
         </div>
     );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
