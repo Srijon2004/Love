@@ -678,22 +678,59 @@ export default function Signup() {
   };
 
   // Google Sign-up Handler
+  // const handleGoogleSignUp = async () => {
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     // The signed-in user info
+  //   const user = result.user;
+
+  //   // additionalUserInfo contains useful info like isNewUser
+  //  const isNewUser = result.additionalUserInfo?.isNewUser ?? false;
+
+  //   console.log("User Info:", user);
+  //   console.log("Is new user?", isNewUser);
+
+
+  //     // The same backend endpoint handles both signup and login
+  //     const res = await API.post("/auth/google", { email: user.email  });
+      
+  //     localStorage.setItem("token", res.data.token);
+  //     navigate("/dashboard");
+
+  //   } catch (error) {
+      
+  //   }
+  // };
+
   const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
+      const user = result.user;
 
-      // The same backend endpoint handles both signup and login
-      const res = await API.post("/auth/google", { idToken });
-      
+      // Send user info to backend to login or signup
+      const res = await API.post("/v1/auth/google", {
+        email: user.email,
+        name: user.displayName,
+        photo: user.photoURL,
+        uid: user.uid,
+      });
+
+      // JWT will be set in cookie if backend uses httpOnly cookie
+      // Optionally store in localStorage:
       localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
-
+      alert("Signed in successfully!");
+      // JSON.message("Signed in successfully!");
+      navigate("/login");
+      console.log("User:", res.data.user);
     } catch (error) {
-      console.error("Google Sign-Up Error", error);
-      setErr("Google Sign-Up failed. Please try again.");
+      console.error(error);
+      alert("Google Sign-In failed!");
     }
   };
+
+
+
+
 
 
   return (

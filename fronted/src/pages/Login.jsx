@@ -512,22 +512,49 @@ export default function Login() {
   };
 
   // Google Sign-in Handler
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      // The ID token is sent to your backend for verification
-      const idToken = await result.user.getIdToken();
+  // const handleGoogleSignIn = async () => {
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     // The ID token is sent to your backend for verification
+  //     const idToken = await result.user.getIdToken();
 
-      // Make a request to your new backend endpoint
-      const res = await API.post("/auth/google", { idToken });
+  //     // Make a request to your new backend endpoint
+  //     const res = await API.post("/auth/google", { idToken });
       
-      // Save the token from your backend and navigate
-      localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
+  //     // Save the token from your backend and navigate
+  //     localStorage.setItem("token", res.data.token);
+  //     navigate("/dashboard");
 
-    } catch (error) {
-      console.error("Google Sign-In Error", error);
-      setErr("Google Sign-In failed. Please try again.");
+  //   } catch (error) {
+  //     console.error("Google Sign-In Error", error);
+  //     setErr("Google Sign-In failed. Please try again.");
+  //   }
+  // };
+
+
+     const handleGoogleSignIn = async () => {
+    try {
+      // Firebase popup login
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Send user info to backend
+      const res = await API.post("/v1/auth/google", {
+        email: user.email,
+        name: user.displayName,
+        photo: user.photoURL,
+        uid: user.uid,
+      });
+
+      // Optional: store JWT token if your backend returns it
+      localStorage.setItem("token", res.data.token);
+
+      alert("Login successful!");
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert("Google Sign-In failed!");
     }
   };
 

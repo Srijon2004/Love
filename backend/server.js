@@ -84,7 +84,7 @@ app.use(cors({ origin: true, credentials: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-
+app.use("/api/v1/auth", authRoutes);
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)

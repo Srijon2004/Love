@@ -101,50 +101,110 @@ router.post("/logout", (req, res) => {
 });
 
 
-router.post("/google", async (req, res) => {
-  try {
-    const { idToken } = req.body;
-    
-    // Verify the ID token with Firebase Admin
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const { name, email } = decodedToken;
 
-    // Check if user already exists
+
+
+
+
+
+
+// router.post("/google", async (req, res) => {
+//   const { email, name, photo, uid } = req.body;
+
+//   try {
+//     let user = await User.findOne({ email });
+
+//     if (!user) {
+//       user = await User.create({ name, email, profilePhoto: photo, firebaseUID: uid });
+//     }
+
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+//       expiresIn: "7d",
+//     });
+
+//     res.status(200).json({ token, user });
+//   } catch (err) {
+//     res.status(500).json({ message: "Something went wrong", error: err.message });
+//   }
+// });
+
+router.post("/google", async (req, res) => {
+  const { email, name, photo, uid } = req.body;
+
+  try {
+    // Check if user exists
     let user = await User.findOne({ email });
 
-    // If user doesn't exist, create a new one
     if (!user) {
-      // For Google-signed-up users, you can generate a random password or leave it empty
-      // as they won't use it to log in.
-      const tempPassword = Math.random().toString(36).slice(-8);
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(tempPassword, salt);
-      
-      user = new User({
+      // If new user, create with firebaseUID
+      user = await User.create({
         username: name,
         email,
-        password: hashedPassword, // A placeholder password
+        firebaseUID: uid,
       });
-      await user.save();
     }
 
-    // Create a JWT for your application
-    const payload = { user: { id: user.id, username: user.username } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    // Create JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    // Send token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res
-      .cookie("token", token, { httpOnly: true, sameSite: "lax" })
-      .json({ token, username: user.username, email: user.email });
-
-  } catch (error) {
-    console.error("Google auth error", error);
-    res.status(401).json({ message: "Google authentication failed." });
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Google Sign-In failed", error: err.message });
   }
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+router.post("/google", async (req, res) => {
+  const { email, name, photo, uid } = req.body;
+
+  try {
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        username: name,
+        email,
+        firebaseUID: uid,
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    // Send JWT in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // true if using HTTPS
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Google Sign-In failed", error: err.message });
+  }
+});
 
 
 
