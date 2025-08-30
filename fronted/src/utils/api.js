@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // ✅ matches your backend
+  baseURL: "https://love-backend-bx8x.onrender.com/api", // ✅ matches your backend
   withCredentials: true, 
 });
 
