@@ -79,7 +79,22 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
-app.use(cors({ origin: true, credentials: true }));
+// app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = [
+  'http://localhost:5173',                 // Your local frontend for development
+  'https://love-srijon.onrender.com'    // <<<<<<<<<<<< REPLACE with your deployed frontend URL
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // Routes
 app.use("/api/auth", authRoutes);
