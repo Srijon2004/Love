@@ -27,7 +27,7 @@ router.post("/signup", async (req, res) => {
 
     // Send ID in response
     res
-      .cookie("token", token, { httpOnly: true, sameSite: "lax" })
+      .cookie("token", token, { httpOnly: true, sameSite: "none",secure: true,  })
       .json({ id: user._id, username: user.username, email: user.email });
   } catch (err) {
     console.error(err);
@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
     });
 
     res
-      .cookie("token", token, { httpOnly: true, sameSite: "lax" })
+      .cookie("token", token, { httpOnly: true, sameSite: "none",secure: true,})
       .json({ username: user.username, email: user.email });
   } catch (err) {
     console.error(err);
