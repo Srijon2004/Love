@@ -176,15 +176,17 @@ app.use("/api/user", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 
 // ✅ Serve frontend in production
+// ✅ Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const __dirname1 = path.resolve();
-  app.use(express.static(path.join(__dirname1, "/frontend/dist"))); // <-- Vite build output folder
+  app.use(express.static(path.join(__dirname1, "/frontend/dist"))); // Vite build folder
 
-  // Catch-all route so React Router works
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname1, "frontend", "dist", "index.html"));
+  // ✅ Fix: Express 5 catch-all
+  app.get("/*", (req, res) => {
+    res.sendFile(path.resolve(__dirname1, "fronted", "dist", "index.html"));
   });
 }
+
 
 // ✅ MongoDB connection
 mongoose
