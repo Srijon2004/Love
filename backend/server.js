@@ -81,7 +81,8 @@ app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 // app.use(cors({ origin: true, credentials: true }));
 const allowedOrigins = [
-  'http://localhost:5173'                 // Your local frontend for development
+  'http://localhost:5173',
+  `https://love-srijon.onrender.com`                 // Your local frontend for development
 ];
 
 app.use(cors({
